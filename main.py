@@ -58,7 +58,7 @@ _IMAGE_PLACEHOLDER_TOKEN_RE = re.compile(
 DEFAULT_SYSTEM_PROMPT = (
     "你是群聊事实核查助手。任务是判断「待核主张」是否成立，并让读者明白为什么。"
     "不要假装搜过不存在的资料，不要编造链接或新闻。"
-    "允许使用稳定、非时效的世界知识（例如数学定义和基础物理原理）；产品发布、开源状态、现行法律需要核对最新资料。\n"
+    "允许使用稳定、非时效的世界知识（例如数学定义和物理原理）。\n"
     "请按以下顺序工作：\n"
     "1. 抽出核心事实主张。外壳是段子、梗图、聊天截图、恶搞、二创时，核查的是图中/文中那句可打真假的话，"
     "不是「这段聊天是否真实发生过」。\n"
@@ -301,11 +301,10 @@ class IsItTrue(Star):
         stamp = datetime.now().astimezone().isoformat(timespec="seconds")
         return (
             prompt
-            + f"\n\n【本次核查时间】系统本地当前时间：{stamp}（含UTC偏移）。\n"
+            + f"\n\n【本次核查时间】系统本地当前时间：{stamp}。\n"
             "以此解释今天、近日和未来日期；时间由运行环境提供，不是待核材料。"
             "时效事件应检索最新证据；知识截止、缺乏记忆、没有搜索结果或找不到原始来源均不能单独证明为假。"
-            "规划阶段保持原有检索协议，不作真假结论；最终判定时，时效主张没有可靠核验资料应为 unknown。"
-            "不得假称已检索或把知识缺口写成反证。"
+            "最终判定时，时效主张没有可靠核验资料应为 unknown。"
         )
 
     def __init__(self, context: Context, config: dict | None = None):
@@ -769,7 +768,6 @@ class IsItTrue(Star):
         else:
             parts.append(
                 "【参考资料】无可用联网证据。仅非时效主张可依据可靠稳定知识判断；"
-                "涉及近期发布、现行政策等时效事实且无法核验时判 unknown，缺少结果不是反证。"
             )
         if notes:
             parts.append("【备注】" + "；".join(notes))
@@ -1012,7 +1010,6 @@ class IsItTrue(Star):
         elif images:
             extra = (
                 "外壳或为段子/聊天截图，请阅读图中文字抽出可核主张，"
-                "依据可核实证据判断；时效主张无可靠资料时判 unknown"
             )
         else:
             return plan
